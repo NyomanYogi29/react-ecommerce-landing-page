@@ -41,7 +41,6 @@ export default function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Arahkan ke rute sukses dengan membawa detail barang dan data pemesan
     navigate("/order-success", {
       state: {
         orderDetails,
@@ -57,7 +56,6 @@ export default function Checkout() {
         Checkout Pesanan
       </h1>
 
-      {/* Ringkasan Barang Singkat */}
       <div className="bg-white border rounded-lg p-4 mb-6 flex justify-between items-center shadow-sm">
         <div>
           <h2 className="font-semibold text-gray-800">{item.name}</h2>
@@ -68,7 +66,6 @@ export default function Checkout() {
         </p>
       </div>
 
-      {/* Form Identitas Pelanggan */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border rounded-lg p-6 shadow-sm flex flex-col gap-4"
