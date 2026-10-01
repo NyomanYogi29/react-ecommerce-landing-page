@@ -1,0 +1,116 @@
+import CatalogImages from "../assets/CatalogItems";
+
+export const Category = [
+  { id: 1, name: "All" },
+  { id: 2, name: "Headphone" },
+  { id: 3, name: "Smartwatch" },
+  { id: 4, name: "Mouse" },
+];
+
+export const Items = [
+  {
+    id: 1,
+    name: "Sony WH-1000XM5",
+    category: "Headphone",
+    price: "Rp 5.299.000",
+    image: CatalogImages.headphone1,
+  },
+  {
+    id: 2,
+    name: "Audio-Technica ATH-M50x",
+    category: "Headphone",
+    price: "Rp 2.350.000",
+    image: CatalogImages.headphone2,
+  },
+  {
+    id: 3,
+    name: "Bose QuietComfort 45",
+    category: "Headphone",
+    price: "Rp 4.799.000",
+    image: CatalogImages.headphone3,
+  },
+  {
+    id: 4,
+    name: "Sennheiser Momentum 4",
+    category: "Headphone",
+    price: "Rp 5.499.000",
+    image: CatalogImages.headphone4,
+  },
+  {
+    id: 5,
+    name: "SteelSeries Arctis Nova Pro",
+    category: "Headphone",
+    price: "Rp 4.800.000",
+    image: CatalogImages.headphone5,
+  },
+  {
+    id: 6,
+    name: "Apple Watch Series 9",
+    category: "Smartwatch",
+    price: "Rp 7.499.000",
+    image: CatalogImages.smartwatch1,
+  },
+  {
+    id: 7,
+    name: "Samsung Galaxy Watch 6",
+    category: "Smartwatch",
+    price: "Rp 3.999.000",
+    image: CatalogImages.smartwatch2,
+  },
+  {
+    id: 8,
+    name: "Garmin Forerunner 265",
+    category: "Smartwatch",
+    price: "Rp 7.799.000",
+    image: CatalogImages.smartwatch3,
+  },
+  {
+    id: 9,
+    name: "Huawei Watch GT 4",
+    category: "Smartwatch",
+    price: "Rp 3.199.000",
+    image: CatalogImages.smartwatch4,
+  },
+  {
+    id: 10,
+    name: "Amazfit GTR 4",
+    category: "Smartwatch",
+    price: "Rp 2.799.000",
+    image: CatalogImages.smartwatch5,
+  },
+  {
+    id: 11,
+    name: "Logitech MX Master 3S",
+    category: "Mouse",
+    price: "Rp 1.699.000",
+    image: CatalogImages.mouse1,
+  },
+  {
+    id: 12,
+    name: "Razer DeathAdder V3 Pro",
+    category: "Mouse",
+    price: "Rp 2.399.000",
+    image: CatalogImages.mouse2,
+  },
+  {
+    id: 13,
+    name: "Logitech G Pro X Superlight 2",
+    category: "Mouse",
+    price: "Rp 2.499.000",
+    image: CatalogImages.mouse3,
+  },
+  {
+    id: 14,
+    name: "SteelSeries Aerox 3 Wireless",
+    category: "Mouse",
+    price: "Rp 1.499.000",
+    image: CatalogImages.mouse4,
+  },
+  {
+    id: 15,
+    name: "Pulsar X2 V2 Wireless",
+    category: "Mouse",
+    price: "Rp 1.399.000",
+    image: CatalogImages.mouse5,
+  },
+];
