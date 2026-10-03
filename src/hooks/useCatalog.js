@@ -1,4 +1,8 @@
-import { fetchCategories, fetchItems, fetchItemsByID } from "@/data/store";
+import {
+  fetchCategories,
+  fetchItems,
+  fetchItemsByID,
+} from "@/data/apiSimulation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const catalogKeys = {
