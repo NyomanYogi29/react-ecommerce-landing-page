@@ -5,7 +5,6 @@ export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Ambil data yang diteruskan dari modal
   const orderDetails = location.state;
 
   const [formData, setFormData] = useState({
@@ -15,7 +14,6 @@ export default function Checkout() {
     address: "",
   });
 
-  // Proteksi jika user akses langsung url /checkout tanpa memilih barang
   if (!orderDetails) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center">

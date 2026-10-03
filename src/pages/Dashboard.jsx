@@ -14,6 +14,7 @@ export default function Dashbaord({ selectedCategory = "All" }) {
             item.category.toLocaleLowerCase() ===
             selectedCategory.toLowerCase(),
         );
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
