@@ -3,7 +3,7 @@ import CatalogCard from "../components/CatalogCard";
 import ItemModal from "../components/ItemModal";
 import { useItems } from "../hooks/useCatalog";
 import { useDebounce } from "../hooks/useDebounce";
-import AddToCartNotification from "../components/common/addToCartNotification";
+import AddToCartNotification from "../components/addToCartNotification";
 
 export default function Dashbaord({
   selectedCategory = "All",
@@ -54,8 +54,8 @@ export default function Dashbaord({
             <CatalogCard
               key={item.id}
               name={item.name}
-              category={item.category}
               price={item.price}
+              seller={item.seller}
               image={item.image}
               rating={item.rating}
               onSelect={() => setSelectedItem(item)}

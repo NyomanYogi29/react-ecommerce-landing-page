@@ -5,6 +5,7 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import { useState } from "react";
 import ItemDetail from "./pages/ItemDetail";
+import Cart from "./pages/Cart";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -35,6 +36,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/item-detail/:id" element={<ItemDetail />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
     </div>

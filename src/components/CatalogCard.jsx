@@ -4,7 +4,7 @@ export default function CatalogCard({
   name,
   price,
   image,
-  category,
+  seller,
   rating,
   onSelect,
   onAddToCart,
@@ -38,9 +38,6 @@ export default function CatalogCard({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-          {category}
-        </span>
         <h3 className="text-sm font-semibold text-gray-800 line-clamp-2">
           {name}
         </h3>
@@ -50,6 +47,7 @@ export default function CatalogCard({
             <Star color="gold" className="w-5 h-5" /> {rating}
           </p>
         </div>
+        <span className="text-[12px] font-black text-gray-900">{seller}</span>
       </div>
     </div>
   );

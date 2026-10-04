@@ -10,7 +10,9 @@ function readDB() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].seller) {
+        return parsed;
+      }
     }
   } catch (error) {
     console.warn(
@@ -39,7 +41,12 @@ export async function fetchItems({ category = "All", search = "" } = {}) {
   if (category !== "All") items = items.filter((i) => i.category === category);
   if (search.trim()) {
     const q = search.toLowerCase();
-    items = items.filter((i) => i.name.toLowerCase().includes(q));
+    items = items.filter(
+      (i) =>
+        i.name.toLowerCase().includes(q) ||
+        (i.seller && i.seller.toLowerCase().includes(q)) ||
+        (i.brand && i.brand.toLowerCase().includes(q)),
+    );
   }
 
   return items;
