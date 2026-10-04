@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CatalogCard from "../components/CatalogCard";
-import ItemModal from "../components/ItemModal";
 import { useItems } from "../hooks/useCatalog";
 import { useDebounce } from "../hooks/useDebounce";
 import AddToCartNotification from "../components/addToCartNotification";
@@ -9,7 +9,7 @@ export default function Dashbaord({
   selectedCategory = "All",
   searchQuery = "",
 }) {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const navigate = useNavigate();
   const debounceSearch = useDebounce(searchQuery, 300);
 
   const [toast, setToast] = useState({
@@ -58,18 +58,12 @@ export default function Dashbaord({
               seller={item.seller}
               image={item.image}
               rating={item.rating}
-              onSelect={() => setSelectedItem(item)}
+              onSelect={() => navigate(`/item-detail/${item.id}`)}
               onAddToCart={() => handleAddToCart(item)}
             />
           ))}
         </div>
       )}
-
-      <ItemModal
-        isOpen={Boolean(selectedItem)}
-        item={selectedItem}
-        onClose={() => setSelectedItem(null)}
-      />
 
       <AddToCartNotification
         isOpen={toast.isOpen}

@@ -22,7 +22,7 @@ export default function CatalogCard({
       onClick={onSelect}
       className="flex flex-col bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition"
     >
-      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center rounded-md overflow-hidden mb-3">
+      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center rounded-md overflow-hidden mb-3 cursor-pointer">
         <button
           type="button"
           onClick={handleCartPlusClick}
@@ -38,7 +38,7 @@ export default function CatalogCard({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2">
+        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 cursor-pointer">
           {name}
         </h3>
         <div className="flex justify-between items-center">

@@ -2,9 +2,9 @@ import Dashbaord from "./pages/Dashboard";
 import NavBar from "./components/layout/NavBar";
 import { Route, Routes } from "react-router-dom";
 import Checkout from "./pages/Checkout";
-import OrderSuccess from "./pages/OrderSuccess";
 import { useState } from "react";
 import ItemDetail from "./pages/ItemDetail";
+import OrderSuccess from "./pages/OrderSuccess";
 import Cart from "./pages/Cart";
 
 function App() {
@@ -35,7 +35,10 @@ function App() {
           />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/item-detail/:id" element={<ItemDetail />} />
+          <Route
+            path="/item-detail/:id"
+            element={<ItemDetail onSelectCategory={setSelectedCategory} />}
+          />
           <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
