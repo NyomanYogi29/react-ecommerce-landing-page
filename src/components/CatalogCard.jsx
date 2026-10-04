@@ -7,10 +7,14 @@ export default function CatalogCard({
   category,
   rating,
   onSelect,
+  onAddToCart,
 }) {
   const handleCartPlusClick = (e) => {
     e.stopPropagation();
     console.log(`${name} successfully added to the cart`);
+    if (onAddToCart) {
+      onAddToCart();
+    }
   };
 
   return (

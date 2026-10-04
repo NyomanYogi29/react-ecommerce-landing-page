@@ -3,6 +3,7 @@ import CatalogCard from "../components/CatalogCard";
 import ItemModal from "../components/ItemModal";
 import { useItems } from "../hooks/useCatalog";
 import { useDebounce } from "../hooks/useDebounce";
+import AddToCartNotification from "../components/common/addToCartNotification";
 
 export default function Dashbaord({
   selectedCategory = "All",
@@ -10,6 +11,21 @@ export default function Dashbaord({
 }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const debounceSearch = useDebounce(searchQuery, 300);
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+  });
+
+  const handleAddToCart = (item) => {
+    console.log("Menambah ke keranjang: ", item.name);
+    setToast({
+      isOpen: true,
+    });
+
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, isOpen: false }));
+    }, 3000);
+  };
 
   const {
     data: items = [],
@@ -43,6 +59,7 @@ export default function Dashbaord({
               image={item.image}
               rating={item.rating}
               onSelect={() => setSelectedItem(item)}
+              onAddToCart={() => handleAddToCart(item)}
             />
           ))}
         </div>
@@ -52,6 +69,11 @@ export default function Dashbaord({
         isOpen={Boolean(selectedItem)}
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
+      />
+
+      <AddToCartNotification
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
       />
     </main>
   );
