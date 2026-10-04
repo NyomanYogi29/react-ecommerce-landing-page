@@ -7,6 +7,7 @@ import { useState } from "react";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
@@ -14,6 +15,8 @@ function App() {
         <NavBar
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
       </header>
 
@@ -21,7 +24,12 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Dashbaord selectedCategory={selectedCategory} />}
+            element={
+              <Dashbaord
+                selectedCategory={selectedCategory}
+                searchQuery={searchQuery}
+              />
+            }
           />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />

@@ -8,7 +8,10 @@ const delay = (ms = LATENCY_MS) => new Promise((r) => setTimeout(r, ms));
 function readDB() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (error) {
     console.warn(
       "Corrupted JSON detected, falling back to seed data: ",
@@ -20,7 +23,7 @@ function readDB() {
 }
 
 function writeDB(data) {
-  localStorage.setItem(STORAGE_KEY, data);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 export async function fetchCategories() {
@@ -33,10 +36,10 @@ export async function fetchItems({ category = "All", search = "" } = {}) {
 
   let items = readDB();
 
-  if (category !== "All") items = items.filter((i) => i.cateogry === category);
+  if (category !== "All") items = items.filter((i) => i.category === category);
   if (search.trim()) {
     const q = search.toLowerCase();
-    items.filter((i) => i.name.toLowerCase().inqlude(q));
+    items = items.filter((i) => i.name.toLowerCase().includes(q));
   }
 
   return items;
@@ -50,6 +53,12 @@ export async function fetchItemsByID(id) {
   return item;
 }
 
+export async function createOrder(data) {
+  writeDB(data);
+  await delay();
+}
+
+// Devtool
 export function resetDB() {
   localStorage.removeItem(STORAGE_KEY);
 }

@@ -2,7 +2,7 @@ import {
   fetchCategories,
   fetchItems,
   fetchItemsByID,
-} from "@/data/apiSimulation";
+} from "../data/apiSimulation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const catalogKeys = {
@@ -15,15 +15,15 @@ export const catalogKeys = {
 };
 
 export const useCategories = () => {
-  useQuery({
-    queryKey: catalogKeys.categories,
-    queryFn: fetchCategories(),
+  return useQuery({
+    queryKey: catalogKeys.categories(),
+    queryFn: fetchCategories,
     staleTime: Infinity,
   });
 };
 
 export const useItems = (filters) => {
-  useQuery({
+  return useQuery({
     queryKey: catalogKeys.list(filters),
     queryFn: () => fetchItems(filters),
     placeholderData: keepPreviousData,
@@ -31,9 +31,9 @@ export const useItems = (filters) => {
 };
 
 export const useItem = (id) => {
-  useQuery({
+  return useQuery({
     queryKey: catalogKeys.detail(id),
     queryFn: () => fetchItemsByID(id),
-    enabled: !id,
+    enabled: Boolean(id),
   });
 };

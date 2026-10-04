@@ -1,16 +1,32 @@
+import { ShoppingCartPlus, Star } from "lucide-react";
+
 export default function CatalogCard({
   name,
   price,
   image,
   category,
+  rating,
   onSelect,
 }) {
+  const handleCartPlusClick = (e) => {
+    e.stopPropagation();
+    console.log(`${name} successfully added to the cart`);
+  };
+
   return (
     <div
       onClick={onSelect}
       className="flex flex-col bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition"
     >
-      <div className="w-full aspect-square bg-gray-50 flex items-center justify-center rounded-md overflow-hidden mb-3">
+      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center rounded-md overflow-hidden mb-3">
+        <button
+          type="button"
+          onClick={handleCartPlusClick}
+          className="absolute cursor-pointer top-2 right-2 z-10 p-2 rounded-full bg-black/10 hover:bg-black/20 text-gray-700 backdrop-blur-sm transition-colors flex items-center justify-center focus:outline-none"
+          aria-label="Add to cart"
+        >
+          <ShoppingCartPlus className="w-6 h-6" />
+        </button>
         <img
           src={image}
           alt={name}
@@ -24,7 +40,12 @@ export default function CatalogCard({
         <h3 className="text-sm font-semibold text-gray-800 line-clamp-2">
           {name}
         </h3>
-        <p className="text-base font-bold text-gray-900 mt-1">{price}</p>
+        <div className="flex justify-between items-center">
+          <p className="text-base font-bold text-red-400 mt-1">{price}</p>
+          <p className="text-sm font-light text-gray-900">
+            <Star color="gold" className="w-5 h-5" /> {rating}
+          </p>
+        </div>
       </div>
     </div>
   );
