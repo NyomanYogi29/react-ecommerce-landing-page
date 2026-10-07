@@ -6,13 +6,15 @@ import { useState } from "react";
 import ItemDetail from "./pages/ItemDetail";
 import OrderSuccess from "./pages/OrderSuccess";
 import Cart from "./pages/Cart";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
+    <CartProvider>
+      <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
       <header>
         <NavBar
           selectedCategory={selectedCategory}
@@ -43,6 +45,7 @@ function App() {
         </Routes>
       </main>
     </div>
+    </CartProvider>
   );
 }
 

@@ -4,6 +4,7 @@ import { Star, Plus, Minus, Store, ArrowLeft } from "lucide-react";
 import { useItem } from "../hooks/useCatalog";
 import { priceParcer } from "../utils/priceParser";
 import AddToCartNotification from "../components/addToCartNotification";
+import { useCart } from "../context/CartContext";
 
 const formatRupiah = (val) => "Rp " + Number(val).toLocaleString("id-ID");
 
@@ -11,6 +12,7 @@ export default function ItemDetail({ onSelectCategory }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: item, isLoading, isError, error } = useItem(id);
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [toast, setToast] = useState({ isOpen: false });
 
@@ -21,6 +23,9 @@ export default function ItemDetail({ onSelectCategory }) {
   };
 
   const handleAddToCart = () => {
+    if (item) {
+      addToCart(item, quantity);
+    }
     setToast({ isOpen: true });
     setTimeout(() => {
       setToast((prev) => ({ ...prev, isOpen: false }));
@@ -82,6 +87,20 @@ export default function ItemDetail({ onSelectCategory }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <nav className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+        <button
+          type="button"
+          onClick={() => {
+            if (window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            } else {
+              navigate("/");
+            }
+          }}
+          className="cursor-pointer mr-1 text-gray-600 flex items-center justify-center p-0.5"
+          aria-label="Kembali"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
         <Link to="/" className="hover:text-blue-600 transition">
           Dashboard
         </Link>

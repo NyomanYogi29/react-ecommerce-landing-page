@@ -21,7 +21,8 @@ export default function OrderSuccess() {
   }
 
   const { orderDetails, customerInfo, orderId } = successData;
-  const { item, quantity, totalPrice } = orderDetails;
+  const { item, quantity, totalPrice, items: orderItems } = orderDetails;
+  const displayItems = orderItems && orderItems.length > 0 ? orderItems : [item];
 
   return (
     <div className="max-w-xl mx-auto py-12 px-4">
@@ -35,19 +36,30 @@ export default function OrderSuccess() {
         <p className="text-sm text-gray-500 mt-1">ID Transaksi: {orderId}</p>
 
         {/* Rincian Produk */}
-        <div className="mt-6 text-left border rounded-lg p-4 bg-gray-50 flex items-center gap-4">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-16 h-16 object-contain rounded bg-white p-1 border"
-          />
-          <div className="flex-1">
-            <h4 className="font-semibold text-gray-800">{item.name}</h4>
-            <p className="text-sm text-gray-500">Jumlah: {quantity} unit</p>
+        <div className="mt-6 text-left border rounded-lg p-4 bg-gray-50 divide-y divide-gray-200">
+          {displayItems.map((it) => {
+            const qty = orderDetails.quantities?.[it.id] ?? (it.id === item?.id ? quantity : it.quantity || 1);
+            return (
+              <div key={it.id} className="py-3 first:pt-0 last:pb-0 flex items-center gap-4">
+                <img
+                  src={it.image}
+                  alt={it.name}
+                  className="w-16 h-16 object-contain rounded bg-white p-1 border"
+                />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800">{it.name}</h4>
+                  <p className="text-sm text-gray-500">Jumlah: {qty} unit</p>
+                </div>
+                <p className="font-bold text-gray-900">{it.price}</p>
+              </div>
+            );
+          })}
+          <div className="pt-3 flex justify-between items-center">
+            <span className="font-medium text-gray-700">Total Dibayar</span>
+            <p className="font-bold text-gray-900 text-lg">
+              Rp {totalPrice.toLocaleString("id-ID")}
+            </p>
           </div>
-          <p className="font-bold text-gray-900">
-            Rp {totalPrice.toLocaleString("id-ID")}
-          </p>
         </div>
 
         {/* Detail Pembeli */}

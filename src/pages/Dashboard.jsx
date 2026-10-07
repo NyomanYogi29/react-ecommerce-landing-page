@@ -4,6 +4,7 @@ import CatalogCard from "../components/CatalogCard";
 import { useItems } from "../hooks/useCatalog";
 import { useDebounce } from "../hooks/useDebounce";
 import AddToCartNotification from "../components/addToCartNotification";
+import { useCart } from "../context/CartContext";
 
 export default function Dashbaord({
   selectedCategory = "All",
@@ -11,13 +12,14 @@ export default function Dashbaord({
 }) {
   const navigate = useNavigate();
   const debounceSearch = useDebounce(searchQuery, 300);
+  const { addToCart } = useCart();
 
   const [toast, setToast] = useState({
     isOpen: false,
   });
 
   const handleAddToCart = (item) => {
-    console.log("Menambah ke keranjang: ", item.name);
+    addToCart(item, 1);
     setToast({
       isOpen: true,
     });

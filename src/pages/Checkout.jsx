@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { removeFromCart } = useCart();
 
   const orderDetails = location.state;
 
@@ -30,7 +32,8 @@ export default function Checkout() {
     );
   }
 
-  const { item, quantity, totalPrice } = orderDetails;
+  const { item, quantity, totalPrice, items: orderItems } = orderDetails;
+  const displayItems = orderItems && orderItems.length > 0 ? orderItems : [item];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,9 +42,15 @@ export default function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const purchasedIds = displayItems.map((it) => it.id);
+    removeFromCart(purchasedIds);
+
     navigate("/order-success", {
       state: {
-        orderDetails,
+        orderDetails: {
+          ...orderDetails,
+          items: displayItems,
+        },
         customerInfo: formData,
         orderId: `ORD-${Date.now()}`,
       },
@@ -54,14 +63,24 @@ export default function Checkout() {
         Checkout Pesanan
       </h1>
 
-      <div className="bg-white border rounded-lg p-4 mb-6 flex justify-between items-center shadow-sm">
-        <div>
-          <h2 className="font-semibold text-gray-800">{item.name}</h2>
-          <p className="text-sm text-gray-500">Jumlah: {quantity} barang</p>
+      <div className="bg-white border rounded-lg p-4 mb-6 divide-y divide-gray-100 shadow-sm">
+        {displayItems.map((it) => {
+          const qty = orderDetails.quantities?.[it.id] ?? (it.id === item?.id ? quantity : it.quantity || 1);
+          return (
+            <div key={it.id} className="py-2.5 first:pt-0 last:pb-0 flex justify-between items-center">
+              <div>
+                <h2 className="font-semibold text-gray-800">{it.name}</h2>
+                <p className="text-sm text-gray-500">Jumlah: {qty} barang</p>
+              </div>
+            </div>
+          );
+        })}
+        <div className="pt-3 flex justify-between items-center">
+          <span className="font-medium text-gray-700">Total Pembayaran</span>
+          <p className="text-lg font-bold text-blue-600">
+            Rp {totalPrice.toLocaleString("id-ID")}
+          </p>
         </div>
-        <p className="text-lg font-bold text-blue-600">
-          Rp {totalPrice.toLocaleString("id-ID")}
-        </p>
       </div>
 
       <form

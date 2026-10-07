@@ -1,18 +1,15 @@
 import { useState, useMemo } from "react";
 import {
-  Heart,
   Trash2,
   Minus,
   Plus,
-  ChevronRight,
-  Ticket,
-  BadgePercent,
   Check,
   ShoppingBasket,
+  ArrowLeft,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Items } from "../data";
 import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
+import { useCart } from "../context/CartContext";
 
 export function EmptyCartState() {
   return (
@@ -42,13 +39,10 @@ export function EmptyCartState() {
 
 export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
   const navigate = useNavigate();
+  const { updateQuantity } = useCart();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingDeleteIds, setPendingDeleteIds] = useState([]);
-
-  const [quantities, setQuantities] = useState(() =>
-    items.reduce((acc, item) => ({ ...acc, [item.id]: 1 }), {}),
-  );
 
   const [selectedIds, setSelectedIds] = useState(() => items.map((i) => i.id));
 
@@ -69,10 +63,10 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
   }, [items]);
 
   const handleUpdateQty = (id, delta) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [id]: Math.max(1, (prev[id] || 1) + delta),
-    }));
+    const currentItem = items.find((it) => it.id === id);
+    const currentQty = currentItem ? currentItem.quantity || 1 : 1;
+    const newQty = Math.max(1, currentQty + delta);
+    updateQuantity(id, newQty);
   };
 
   const handleToggleSelect = (id) => {
@@ -139,10 +133,10 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
           typeof item.price === "number"
             ? item.price
             : Number(String(item.price || "").replace(/[^0-9]/g, "")) || 0;
-        const qty = quantities[item.id] || 1;
+        const qty = item.quantity || 1;
         return sum + numericPrice * qty;
       }, 0);
-  }, [items, activeSelectedIds, quantities]);
+  }, [items, activeSelectedIds]);
 
   const handleProceedCheckout = () => {
     const selectedItems = items.filter((item) =>
@@ -150,10 +144,15 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
     );
     if (selectedItems.length === 0) return;
 
+    const quantitiesMap = selectedItems.reduce(
+      (acc, it) => ({ ...acc, [it.id]: it.quantity || 1 }),
+      {},
+    );
+
     if (onCheckout) {
       onCheckout({
         items: selectedItems,
-        quantities,
+        quantities: quantitiesMap,
         totalPrice,
       });
       return;
@@ -163,8 +162,8 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
       state: {
         items: selectedItems,
         item: selectedItems[0],
-        quantity: quantities[selectedItems[0]?.id] || 1,
-        quantities,
+        quantity: selectedItems[0]?.quantity || 1,
+        quantities: quantitiesMap,
         totalPrice,
       },
     });
@@ -236,39 +235,40 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
                       onChange={() => handleToggleSelect(item.id)}
                       className="w-4 h-4 mt-2 rounded border-gray-300 text-[#03AC0E] accent-[#03AC0E] cursor-pointer"
                     />
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
+                    <Link
+                      to={`/item-detail/${item.id}`}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0 cursor-pointer block"
+                    >
                       <img
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
-                    </div>
+                    </Link>
                   </div>
 
                   <div className="flex-1 flex flex-col justify-between">
-                    <div>
+                    <Link
+                      to={`/item-detail/${item.id}`}
+                      className="cursor-pointer block"
+                    >
                       <h3 className="text-sm font-medium text-gray-800 line-clamp-2">
                         {item.name}
                       </h3>
                       <p className="text-xs text-gray-400 mt-1">
                         Kategori: {item.category} • Brand: {item.brand}
                       </p>
-                    </div>
+                    </Link>
 
                     <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
-                      <div className="flex items-center gap-1 text-[#E02954] font-bold text-sm sm:text-base">
-                        <BadgePercent className="w-4 h-4 shrink-0" />
+                      <Link
+                        to={`/item-detail/${item.id}`}
+                        className="flex items-center gap-1 text-[#E02954] font-bold text-sm sm:text-base cursor-pointer"
+                      >
                         <span>{item.price}</span>
-                      </div>
+                      </Link>
 
                       <div className="flex items-center gap-4">
-                        <button
-                          type="button"
-                          className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-                          title="Tambah ke wishlist"
-                        >
-                          <Heart className="w-4 h-4" />
-                        </button>
                         <button
                           type="button"
                           onClick={() => handleOpenDeleteSingle(item.id)}
@@ -287,7 +287,7 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="px-3 text-xs font-semibold text-gray-700 min-w-6 text-center">
-                            {quantities[item.id] || 1}
+                            {item.quantity || 1}
                           </span>
                           <button
                             type="button"
@@ -312,7 +312,6 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
           <h2 className="text-base font-bold text-gray-900">
             Ringkasan belanja
           </h2>
-
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-500">Total</span>
             <span className="font-bold text-gray-900 text-base">
@@ -321,19 +320,7 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
                 : "-"}
             </span>
           </div>
-
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 bg-gray-100 rounded text-gray-500">
-                <Ticket className="w-4 h-4" />
-              </div>
-              <p className="text-xs font-medium text-gray-700 leading-tight">
-                Verifikasi nomor HP, biar bisa pake promo!
-              </p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-          </div>
-
+          <br></br>
           <button
             type="button"
             onClick={handleProceedCheckout}
@@ -365,29 +352,29 @@ export function CartFilled({ items = [], onCheckout, onRemoveItem }) {
 
 export default function Cart({
   items,
-  cartItems,
+  cartItems: propCartItems,
   cardItems,
   onCheckout,
   onRemoveItem,
 }) {
-  const initialItems = items ?? cartItems ?? cardItems ?? Items.slice(0, 3);
-  const [removedIds, setRemovedIds] = useState([]);
-
-  const cartList = useMemo(() => {
-    return initialItems.filter((item) => !removedIds.includes(item.id));
-  }, [initialItems, removedIds]);
+  const { cartItems: contextCartItems, removeFromCart } = useCart();
+  const cartList = items ?? propCartItems ?? cardItems ?? contextCartItems;
 
   const handleRemove = (idsToRemove) => {
-    const ids = Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove];
-    setRemovedIds((prev) => [...prev, ...ids]);
-    onRemoveItem?.(ids);
+    removeFromCart(idsToRemove);
+    onRemoveItem?.(idsToRemove);
   };
 
   const isCartEmpty = cartList.length === 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Keranjang</h1>
+      <div className="flex gap-3 items-center mb-6">
+        <Link to="/" className="cursor-pointer">
+          <ArrowLeft className="w-6 h-6" />
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-900">Keranjang</h1>
+      </div>
 
       {isCartEmpty ? (
         <EmptyCartState />

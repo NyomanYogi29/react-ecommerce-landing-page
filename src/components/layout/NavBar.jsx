@@ -1,5 +1,8 @@
+import { ShoppingCart } from "lucide-react";
 import magnifyingGlassIcon from "../../assets/magnifying-glass-solid-full.svg";
 import { useCategories } from "../../hooks/useCatalog";
+import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 export default function NavBar({
   selectedCategory,
@@ -8,6 +11,7 @@ export default function NavBar({
   onSearchChange,
 }) {
   const { data: categories = [], isLoading } = useCategories();
+  const { totalQuantity } = useCart();
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm border-b border-gray-100">
@@ -47,16 +51,16 @@ export default function NavBar({
       </div>
 
       <ul className="flex items-center gap-3 text-sm font-medium">
-        <li>
-          <a className="px-3 py-1.5 text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm transition-colors cursor-pointer">
-            Checkout
-          </a>
-        </li>
+        <div className="relative inline-block">
+          <Link to="/cart" className="cursor-pointer block">
+            <ShoppingCart className="w-6.5 h-6.5" color="grey" />
+          </Link>
+          {totalQuantity > 0 && (
+            <span className="absolute -top-1.5 -right-2 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow-sm pointer-events-none">
+              {totalQuantity > 99 ? "99+" : totalQuantity}
+            </span>
+          )}
+        </div>
       </ul>
     </nav>
   );
