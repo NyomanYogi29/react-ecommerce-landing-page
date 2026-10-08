@@ -1,4 +1,4 @@
-import { ShoppingCartPlus, Star } from "lucide-react";
+import { House, ShoppingCartPlus, Star } from "lucide-react";
 
 export default function CatalogCard({
   name,
@@ -20,7 +20,7 @@ export default function CatalogCard({
   return (
     <div
       onClick={onSelect}
-      className="flex flex-col bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition"
+      className="flex flex-col bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition"
     >
       <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center rounded-md overflow-hidden mb-3 cursor-pointer">
         <button
@@ -41,13 +41,16 @@ export default function CatalogCard({
         <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 cursor-pointer">
           {name}
         </h3>
-        <div className="flex justify-between items-center">
-          <p className="text-base font-bold text-red-400 mt-1">{price}</p>
-          <p className="text-sm font-light text-gray-900">
+        <div className="flex justify-between items-center mb-1">
+          <p className="text-base font-bold text-red-400 m-1">{price}</p>
+          <p className="flex items-center gap-1 text-sm font-light text-gray-900">
             <Star color="gold" className="w-5 h-5" /> {rating}
           </p>
         </div>
-        <span className="text-[12px] font-black text-gray-900">{seller}</span>
+        <span className="flex items-center gap-1 mb-1 text-[12px] font-black text-gray-900">
+          <House className="w-5 h-5" />
+          {seller}
+        </span>
       </div>
     </div>
   );

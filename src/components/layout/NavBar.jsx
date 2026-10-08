@@ -1,8 +1,9 @@
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, User } from "lucide-react";
 import magnifyingGlassIcon from "../../assets/magnifying-glass-solid-full.svg";
 import { useCategories } from "../../hooks/useCatalog";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useUser } from "../../context/UserContext";
 
 export default function NavBar({
   selectedCategory,
@@ -12,10 +13,16 @@ export default function NavBar({
 }) {
   const { data: categories = [], isLoading } = useCategories();
   const { totalQuantity } = useCart();
+  const { currentUser } = useUser();
+
+  const navigate = useNavigate();
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm border-b border-gray-100">
-      <h1 className="text-xl md:text-2xl font-bold text-blue-600 tracking-tight cursor-pointer">
+      <h1
+        onClick={() => navigate("/")}
+        className="text-xl md:text-2xl font-bold text-blue-600 tracking-tight cursor-pointer"
+      >
         end1tech .store
       </h1>
 
@@ -59,6 +66,26 @@ export default function NavBar({
             <span className="absolute -top-1.5 -right-2 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow-sm pointer-events-none">
               {totalQuantity > 99 ? "99+" : totalQuantity}
             </span>
+          )}
+        </div>
+        <div className="ml-4">
+          {currentUser ? (
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-lg text-gray-800 text-sm font-medium border border-gray-200 shadow-xs"
+              title={`${currentUser.firstName} ${currentUser.lastName}`}
+            >
+              <span className="truncate max-w-[140px]">
+                {currentUser.firstName} {currentUser.lastName}
+              </span>
+              <User className="w-4 h-4 text-gray-600 shrink-0" aria-hidden="true" />
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/sign-up")}
+              className="bg-white rounded outline-solid outline-2 outline-blue-500 font-bold px-2 py-1 hover:bg-blue-500 hover:text-white hover:outline-gray-400 transition-colors cursor-pointer"
+            >
+              Daftar
+            </button>
           )}
         </div>
       </ul>

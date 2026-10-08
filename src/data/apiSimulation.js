@@ -1,6 +1,8 @@
 import { Category, Items } from ".";
+import { generateNewUserId } from "../utils/generateNewUserId";
 
 const STORAGE_KEY = "end1tech.products";
+const USERS_STORAGE_KEY = "end1tech.users";
 const LATENCY_MS = 600;
 
 const delay = (ms = LATENCY_MS) => new Promise((r) => setTimeout(r, ms));
@@ -65,7 +67,59 @@ export async function createOrder(data) {
   await delay();
 }
 
+function readUsersDB() {
+  try {
+    const raw = localStorage.getItem(USERS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to read users from localStorage: ", error);
+  }
+  return [];
+}
+
+function writeUsersDB(data) {
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(data));
+}
+
+export async function registerUser({ firstName, lastName, email, password }) {
+  await delay();
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const users = readUsersDB();
+
+  const emailExists = users.some(
+    (user) => user.email.toLowerCase() === normalizedEmail,
+  );
+
+  if (emailExists) {
+    throw new Error("Email sudah terdaftar. Silakan gunakan email lain.");
+  }
+
+  const newUser = {
+    id: generateNewUserId(),
+    firstName: firstName.trim(),
+    lastName: lastName.trim(),
+    email: normalizedEmail,
+    createdAt: new Date().toISOString(),
+  };
+
+  users.push({
+    ...newUser,
+    password,
+  });
+
+  writeUsersDB(users);
+  return newUser;
+}
+
 // Devtool
 export function resetDB() {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(USERS_STORAGE_KEY);
 }
+
