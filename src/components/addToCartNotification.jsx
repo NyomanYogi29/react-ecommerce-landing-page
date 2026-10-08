@@ -18,7 +18,7 @@ export default function AddToCartNotification({ isOpen = true }) {
           Barang berhasil masuk ke keranjang!
         </p>
         <Link
-          to="/checkout"
+          to="/cart"
           className="font-semibold text-green-700 underline hover:text-green-800 transition-colors"
         >
           Lihat keranjang

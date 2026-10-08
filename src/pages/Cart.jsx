@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Trash2,
   Minus,
@@ -7,7 +7,7 @@ import {
   ShoppingBasket,
   ArrowLeft,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
 import { useCart } from "../context/CartContext";
 
@@ -357,8 +357,23 @@ export default function Cart({
   onCheckout,
   onRemoveItem,
 }) {
+  const location = useLocation();
   const { cartItems: contextCartItems, removeFromCart } = useCart();
   const cartList = items ?? propCartItems ?? cardItems ?? contextCartItems;
+
+  const [showSuccessToast, setShowSuccessToast] = useState(() =>
+    Boolean(location.state?.checkoutSuccess),
+  );
+
+  useEffect(() => {
+    if (location.state?.checkoutSuccess) {
+      setShowSuccessToast(true);
+      const timer = setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   const handleRemove = (idsToRemove) => {
     removeFromCart(idsToRemove);
@@ -369,6 +384,26 @@ export default function Cart({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {showSuccessToast && (
+        <aside
+          aria-live="polite"
+          role="status"
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-300 rounded-xl shadow-lg transition-all duration-300"
+        >
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 shrink-0">
+            <Check className="w-5 h-5 stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm text-emerald-900">
+              Checkout berhasil!
+            </p>
+            <p className="text-xs text-emerald-700">
+              Pesanan Anda telah diproses.
+            </p>
+          </div>
+        </aside>
+      )}
+
       <div className="flex gap-3 items-center mb-6">
         <Link to="/" className="cursor-pointer">
           <ArrowLeft className="w-6 h-6" />

@@ -1,20 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useUser } from "../context/UserContext";
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { removeFromCart } = useCart();
+  const { clearCart } = useCart();
+  const { currentUser } = useUser();
 
   const orderDetails = location.state;
 
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/sign-up");
+    }
+  }, [currentUser, navigate]);
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: currentUser
+      ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
+      : "",
+    email: currentUser?.email || "",
     phone: "",
     address: "",
   });
+
+  if (!currentUser) {
+    return null;
+  }
 
   if (!orderDetails) {
     return (
@@ -24,7 +38,7 @@ export default function Checkout() {
         </p>
         <button
           onClick={() => navigate("/")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer hover:bg-blue-700 transition-colors"
         >
           Kembali ke Katalog
         </button>
@@ -42,17 +56,11 @@ export default function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const purchasedIds = displayItems.map((it) => it.id);
-    removeFromCart(purchasedIds);
+    clearCart();
 
-    navigate("/order-success", {
+    navigate("/cart", {
       state: {
-        orderDetails: {
-          ...orderDetails,
-          items: displayItems,
-        },
-        customerInfo: formData,
-        orderId: `ORD-${Date.now()}`,
+        checkoutSuccess: true,
       },
     });
   };
