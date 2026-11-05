@@ -1,4 +1,5 @@
 import { AuthService } from "@/services/auth.service";
+import { AuthHandler } from "@/handler/auth.handler";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -6,7 +7,10 @@ export const useLogin = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (credential) => AuthService.login(credential),
+    mutationFn: (formData) => {
+      const payload = AuthHandler.loginPayload(formData);
+      return AuthService.login(payload.email, payload.password);
+    },
     onSuccess: () => {
       navigate("/");
     },

@@ -32,7 +32,7 @@ export default function Login() {
         {error && (
           <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-lg flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-            <span>{error}</span>
+            <span>{error.response?.data?.message || error.message || error}</span>
           </div>
         )}
 
