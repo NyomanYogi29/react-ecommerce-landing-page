@@ -4,7 +4,7 @@ import CatalogImages from "../assets/CatalogItems";
 
 export const Category = [
   { id: 1, name: "All" },
-  { id: 2, name: "Headphone" },
+  { id: 2, name: "Headphones" },
   { id: 3, name: "Smartwatch" },
   { id: 4, name: "Mouse" },
 ];

@@ -1,4 +1,5 @@
 import { House, ShoppingCartPlus, Star } from "lucide-react";
+import { config } from "@/config";
 
 export default function CatalogCard({
   name,
@@ -6,6 +7,8 @@ export default function CatalogCard({
   image,
   seller,
   rating,
+  review_count,
+  reviewCount,
   onSelect,
   onAddToCart,
 }) {
@@ -16,6 +19,20 @@ export default function CatalogCard({
       onAddToCart();
     }
   };
+
+  const formattedPrice =
+    typeof price === "number"
+      ? `Rp ${price.toLocaleString("id-ID")}`
+      : typeof price === "string" && !price.startsWith("Rp")
+      ? `Rp ${Number(price || 0).toLocaleString("id-ID")}`
+      : price;
+
+  const imageUrl =
+    typeof image === "string" && image.startsWith("/storage")
+      ? `${config.API_URL.replace(/\/api\/v1\/?$/, "")}${image}`
+      : image;
+
+  const totalReviews = review_count ?? reviewCount;
 
   return (
     <div
@@ -32,7 +49,7 @@ export default function CatalogCard({
           <ShoppingCartPlus className="w-6 h-6" />
         </button>
         <img
-          src={image}
+          src={imageUrl}
           alt={name}
           className="max-h-full max-w-full object-contain p-2"
         />
@@ -42,15 +59,21 @@ export default function CatalogCard({
           {name}
         </h3>
         <div className="flex justify-between items-center mb-1">
-          <p className="text-base font-bold text-red-400 m-1">{price}</p>
+          <p className="text-base font-bold text-red-400 m-1">{formattedPrice}</p>
           <p className="flex items-center gap-1 text-sm font-light text-gray-900">
-            <Star color="gold" className="w-5 h-5" /> {rating}
+            <Star color="gold" className="w-5 h-5 fill-amber-400 text-amber-400" />
+            <span>{rating}</span>
+            {totalReviews !== undefined && (
+              <span className="text-xs text-gray-400">({totalReviews})</span>
+            )}
           </p>
         </div>
-        <span className="flex items-center gap-1 mb-1 text-[12px] font-black text-gray-900">
-          <House className="w-5 h-5" />
-          {seller}
-        </span>
+        {seller && (
+          <span className="flex items-center gap-1 mb-1 text-[12px] font-black text-gray-900">
+            <House className="w-5 h-5" />
+            {seller}
+          </span>
+        )}
       </div>
     </div>
   );

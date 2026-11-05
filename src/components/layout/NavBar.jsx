@@ -1,7 +1,7 @@
 import { ShoppingCart } from "lucide-react";
 import magnifyingGlassIcon from "../../assets/magnifying-glass-solid-full.svg";
 import { Category } from "../../data";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@/hooks/user/useUser";
 
 export default function NavBar({
@@ -14,9 +14,49 @@ export default function NavBar({
 }) {
   const categories = Category;
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: userResponse } = useUser();
 
   const user = userResponse?.data || currentUser;
+  const currentCategory = selectedCategory ?? (searchParams.get("category") || "All");
+  const currentSearch = searchQuery ?? (searchParams.get("search") || "");
+
+  const handleCategoryChange = (e) => {
+    const val = e.target.value;
+    if (onSelectCategory) {
+      onSelectCategory(val);
+    } else {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (val && val !== "All") {
+          next.set("category", val);
+        } else {
+          next.delete("category");
+        }
+        return next;
+      });
+      if (window.location.pathname !== "/") {
+        navigate(val && val !== "All" ? `/?category=${encodeURIComponent(val)}` : "/");
+      }
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    if (onSearchChange) {
+      onSearchChange(val);
+    } else {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (val) {
+          next.set("search", val);
+        } else {
+          next.delete("search");
+        }
+        return next;
+      });
+    }
+  };
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm border-b border-gray-100">
@@ -29,8 +69,8 @@ export default function NavBar({
 
       <div className="flex items-center w-72 md:w-96">
         <select
-          value={selectedCategory}
-          onChange={(e) => onSelectCategory?.(e.target.value)}
+          value={currentCategory}
+          onChange={handleCategoryChange}
           className="h-full px-3 py-1.5 text-sm bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg outline-none text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
         >
           {categories.map((cat) => (
@@ -50,8 +90,8 @@ export default function NavBar({
             name="search-bar"
             type="text"
             placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange?.(e.target.value)}
+            value={currentSearch}
+            onChange={handleSearchChange}
             className="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-r-lg outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-gray-400"
           />
         </div>
