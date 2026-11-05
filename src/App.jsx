@@ -17,11 +17,16 @@ function App() {
 
       <main className="flex-1">
         <Routes>
+          {/* Dashboard pages */}
           <Route path="/" element={<Dashbaord />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
+
+          {/* Product & Shopping pages */}
           <Route path="/item-detail/:id" element={<ItemDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+
+          {/* Auth pages */}
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Routes>

@@ -1,7 +1,8 @@
-import { ShoppingCart, User } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import magnifyingGlassIcon from "../../assets/magnifying-glass-solid-full.svg";
 import { Category } from "../../data";
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "@/hooks/user/useUser";
 
 export default function NavBar({
   selectedCategory,
@@ -13,6 +14,9 @@ export default function NavBar({
 }) {
   const categories = Category;
   const navigate = useNavigate();
+  const { data: userResponse } = useUser();
+
+  const user = userResponse?.data || currentUser;
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm border-b border-gray-100">
@@ -65,19 +69,10 @@ export default function NavBar({
           )}
         </div>
         <div className="ml-4">
-          {currentUser ? (
-            <div
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-lg text-gray-800 text-sm font-medium border border-gray-200 shadow-xs"
-              title={`${currentUser.firstName} ${currentUser.lastName}`}
-            >
-              <span className="truncate max-w-140px">
-                {currentUser.firstName} {currentUser.lastName}
-              </span>
-              <User
-                className="w-4 h-4 text-gray-600 shrink-0"
-                aria-hidden="true"
-              />
-            </div>
+          {user ? (
+            <span className="font-medium text-gray-800 text-sm">
+              {user.name}
+            </span>
           ) : (
             <div className="flex items-center gap-2">
               {/* Tombol Masuk */}
