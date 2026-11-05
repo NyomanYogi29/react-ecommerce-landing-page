@@ -79,12 +79,23 @@ export default function NavBar({
               />
             </div>
           ) : (
-            <button
-              onClick={() => navigate("/sign-up")}
-              className="bg-white rounded outline-solid outline-2 outline-blue-500 font-bold px-2 py-1 hover:bg-blue-500 hover:text-white hover:outline-gray-400 transition-colors cursor-pointer"
-            >
-              Daftar
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Tombol Masuk */}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-blue-600 font-bold px-3 py-1 rounded hover:bg-blue-50 transition-colors cursor-pointer"
+              >
+                Masuk
+              </button>
+
+              {/* Tombol Daftar */}
+              <button
+                onClick={() => navigate("/sign-up")}
+                className="bg-blue-600 text-white font-bold px-3 py-1 rounded hover:bg-blue-700 transition-colors cursor-pointer shadow-xs"
+              >
+                Daftar
+              </button>
+            </div>
           )}
         </div>
       </ul>

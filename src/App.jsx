@@ -5,7 +5,8 @@ import Checkout from "./pages/Checkout";
 import ItemDetail from "./pages/ItemDetail";
 import OrderSuccess from "./pages/OrderSuccess";
 import Cart from "./pages/Cart";
-import SignUp from "./pages/SignUp";
+import SignUp from "./pages/auth/Register";
+import Login from "./pages/auth/Login";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/item-detail/:id" element={<ItemDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </main>
     </div>

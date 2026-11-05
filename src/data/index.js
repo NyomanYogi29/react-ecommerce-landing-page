@@ -1,3 +1,5 @@
+// <--- THIS FILE IS DEPRECATED BUT STILL IN USE FOR SOME EDGE CASES --->
+
 import CatalogImages from "../assets/CatalogItems";
 
 export const Category = [
