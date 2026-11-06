@@ -2,7 +2,7 @@ import { ShoppingCart } from "lucide-react";
 import magnifyingGlassIcon from "../../assets/magnifying-glass-solid-full.svg";
 import { Category } from "../../data";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useUser } from "@/hooks/user/useUser";
+import { useUser } from "@/hooks/useUser";
 
 export default function NavBar({
   selectedCategory,
@@ -18,7 +18,8 @@ export default function NavBar({
   const { data: userResponse } = useUser();
 
   const user = userResponse?.data || currentUser;
-  const currentCategory = selectedCategory ?? (searchParams.get("category") || "All");
+  const currentCategory =
+    selectedCategory ?? (searchParams.get("category") || "All");
   const currentSearch = searchQuery ?? (searchParams.get("search") || "");
 
   const handleCategoryChange = (e) => {
@@ -36,7 +37,9 @@ export default function NavBar({
         return next;
       });
       if (window.location.pathname !== "/") {
-        navigate(val && val !== "All" ? `/?category=${encodeURIComponent(val)}` : "/");
+        navigate(
+          val && val !== "All" ? `/?category=${encodeURIComponent(val)}` : "/",
+        );
       }
     }
   };

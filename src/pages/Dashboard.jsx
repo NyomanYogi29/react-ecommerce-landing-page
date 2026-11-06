@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import CatalogCard from "../components/CatalogCard";
 import AddToCartNotification from "../components/addToCartNotification";
-import { useProductsByCategory } from "@/hooks/product/useProductsByCategory";
+import { useProductsByCategory } from "@/hooks/useProduct";
 
 export default function Dashbaord() {
   const navigate = useNavigate();
@@ -9,21 +9,23 @@ export default function Dashbaord() {
   const category = searchParams.get("category") || "All";
   const searchQuery = searchParams.get("search") || "";
 
-  const { data: response, isLoading, isError } = useProductsByCategory(category);
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useProductsByCategory(category);
   const items = response?.data || [];
 
   const displayedItems = searchQuery
     ? items.filter((item) =>
-        item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        item.name?.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : items;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-6">
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">
-          Memuat produk...
-        </div>
+        <div className="text-center py-12 text-gray-500">Memuat produk...</div>
       ) : isError ? (
         <div className="text-center py-12 text-red-500">
           Gagal memuat produk.

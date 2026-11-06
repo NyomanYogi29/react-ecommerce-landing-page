@@ -1,29 +1,41 @@
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Star, Plus, Minus, Store, ArrowLeft } from "lucide-react";
-import { Items } from "../data";
-import { priceParcer } from "../utils/priceParser";
+import { config } from "@/config";
 import AddToCartNotification from "../components/addToCartNotification";
+import { useProductDetail } from "@/hooks/useProduct";
 
-const formatRupiah = (val) => "Rp " + Number(val).toLocaleString("id-ID");
+const formatRupiah = (val) => "Rp " + Number(val || 0).toLocaleString("id-ID");
 
 export default function ItemDetail({ onSelectCategory }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = Items.find((i) => i.id === Number(id));
-  const quantity = 1;
+  const [quantity, setQuantity] = useState(1);
+
+  const { data: response, isLoading, isError } = useProductDetail(id);
+  const product = response?.data?.product;
+  const reviews = response?.data?.reviews?.data || [];
 
   const handleCategoryClick = () => {
-    if (!item?.category) return;
-    onSelectCategory?.(item.category);
+    if (!product?.category_id) return;
+    onSelectCategory?.(product.category_id);
     navigate("/");
   };
 
   const handleBuyNow = () => {
-    if (!item) return;
-    navigate("/checkout");
+    if (!product) return;
+    navigate("/checkout", { state: { product, quantity } });
   };
 
-  if (!item) {
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-gray-500">
+        Memuat detail produk...
+      </div>
+    );
+  }
+
+  if (isError || !product) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-xl font-bold text-gray-800 mb-2">
@@ -42,8 +54,13 @@ export default function ItemDetail({ onSelectCategory }) {
     );
   }
 
-  const numericPrice = priceParcer(item.price);
+  const numericPrice = Number(product.price) || 0;
   const subtotal = numericPrice * quantity;
+
+  const imageUrl =
+    typeof product.image === "string" && product.image.startsWith("/storage")
+      ? `${config.API_URL.replace(/\/api\/v1\/?$/, "")}${product.image}`
+      : product.image;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -70,11 +87,11 @@ export default function ItemDetail({ onSelectCategory }) {
           onClick={handleCategoryClick}
           className="hover:text-blue-600 transition cursor-pointer"
         >
-          {item.category}
+          {product.category?.name || "Katalog"}
         </span>
         <span>/</span>
         <span className="text-gray-800 font-medium truncate max-w-xs">
-          {item.name}
+          {product.name}
         </span>
       </nav>
 
@@ -83,8 +100,8 @@ export default function ItemDetail({ onSelectCategory }) {
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm overflow-hidden">
             <div className="aspect-square w-full rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-50">
               <img
-                src={item.image}
-                alt={item.name}
+                src={imageUrl}
+                alt={product.name}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -94,28 +111,32 @@ export default function ItemDetail({ onSelectCategory }) {
         <div className="lg:col-span-5 space-y-6">
           <div>
             <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug">
-              {item.name}
+              {product.name}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">
               <div className="flex items-center gap-1 font-semibold text-gray-800">
                 <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                <span>{item.rating}</span>
+                <span>{product.rating}</span>
                 <span className="text-gray-400 font-normal">
-                  ({item.reviewCount || 0} rating)
+                  ({product.review_count || 0} rating)
                 </span>
               </div>
-              <span className="text-gray-300">•</span>
-              <div className="flex items-center gap-1.5 text-gray-600">
-                <Store className="w-4 h-4 text-blue-600" />
-                <span className="font-medium">{item.seller}</span>
-              </div>
+              {product.seller && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <div className="flex items-center gap-1.5 text-gray-600">
+                    <Store className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium">{product.seller}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
           <div className="pt-2 border-t border-gray-100">
             <span className="text-3xl font-extrabold text-blue-600 tracking-tight">
-              {item.price}
+              {formatRupiah(numericPrice)}
             </span>
           </div>
 
@@ -124,36 +145,32 @@ export default function ItemDetail({ onSelectCategory }) {
               Deskripsi Produk
             </h2>
             <div className="space-y-2 text-sm text-gray-600 leading-relaxed">
-              <p>
-                <span className="font-semibold text-gray-700">Brand:</span>{" "}
-                {item.brand}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-700">Perusahaan:</span>{" "}
-                {item.company}
-              </p>
               <p className="whitespace-pre-line pt-2 text-gray-600">
-                {item.description}
+                {product.description}
               </p>
             </div>
           </div>
 
-          {item.reviews && item.reviews.length > 0 && (
+          {reviews.length > 0 && (
             <div className="pt-6 border-t border-gray-100 space-y-4">
               <h2 className="text-base font-bold text-gray-900">
-                Ulasan Pembeli ({item.reviews.length})
+                Ulasan Pembeli ({reviews.length})
               </h2>
               <div className="space-y-3">
-                {item.reviews.map((rev) => (
+                {reviews.map((rev) => (
                   <div
                     key={rev.id}
                     className="p-3.5 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5"
                   >
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-gray-800">
-                        {rev.name}
+                        {rev.name || `User (${rev.user_id?.slice(0, 8)})`}
                       </span>
-                      <span className="text-gray-400">{rev.date}</span>
+                      <span className="text-gray-400">
+                        {rev.created_at
+                          ? new Date(rev.created_at).toLocaleDateString("id-ID")
+                          : ""}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -175,12 +192,12 @@ export default function ItemDetail({ onSelectCategory }) {
 
             <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
               <img
-                src={item.image}
-                alt={item.name}
+                src={imageUrl}
+                alt={product.name}
                 className="w-12 h-12 rounded-lg object-cover border border-gray-100 shrink-0"
               />
               <p className="text-xs font-medium text-gray-700 line-clamp-2 leading-snug">
-                {item.name}
+                {product.name}
               </p>
             </div>
 
@@ -191,6 +208,7 @@ export default function ItemDetail({ onSelectCategory }) {
                   <button
                     type="button"
                     disabled={quantity <= 1}
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     className="px-2.5 h-full text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition cursor-pointer"
                   >
                     <Minus className="w-3.5 h-3.5" />
@@ -200,12 +218,17 @@ export default function ItemDetail({ onSelectCategory }) {
                   </span>
                   <button
                     type="button"
+                    onClick={() => setQuantity((q) => q + 1)}
                     className="px-2.5 h-full text-green-600 hover:bg-gray-100 transition cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <span className="text-xs text-gray-400">Stok: 50+</span>
+                <span className="text-xs text-gray-400">
+                  {product.stock !== undefined
+                    ? `Stok: ${product.stock}`
+                    : "Stok: 50+"}
+                </span>
               </div>
             </div>
 
@@ -221,7 +244,6 @@ export default function ItemDetail({ onSelectCategory }) {
                 type="button"
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white transition shadow-sm cursor-pointer"
               >
-                {" "}
                 <span>+ Keranjang</span>
               </button>
 
@@ -233,30 +255,6 @@ export default function ItemDetail({ onSelectCategory }) {
                 <span>Beli Langsung</span>
               </button>
             </div>
-
-            {/* <div className="flex items-center justify-around pt-3 border-t border-gray-100 text-xs text-gray-500">
-              <button
-                type="button"
-                className="flex items-center gap-1 hover:text-blue-600 transition cursor-pointer"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>Chat</span>
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-1 hover:text-red-500 transition cursor-pointer"
-              >
-                <Heart className="w-3.5 h-3.5" />
-                <span>Wishlist</span>
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-1 hover:text-blue-600 transition cursor-pointer"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Share</span>
-              </button>
-            </div> */}
           </div>
         </div>
       </div>

@@ -4,5 +4,6 @@ export const queryKeys = {
   },
   product: {
     byCategory: (category) => ["product", "category", category],
+    detail: (productId, params) => ["product", "detail", productId, params],
   },
 };
